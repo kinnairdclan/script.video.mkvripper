@@ -1,2 +1,2 @@
-plugin.video.xbmc-mkvripper
+plugin.video.kodi-mkvripper
 ===========================
