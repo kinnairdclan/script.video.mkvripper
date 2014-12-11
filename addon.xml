@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon 
+    id="plugin.video.mkvripper" 
+    version="0.0.1" 
+    name="mkvripper (MakeMKV)"
+    provider-name="Jason Kinnard (kinnard.jason@gmail.com)">
+    <requires>
+	<import addon="xbmc.python" version="2.18.0"/>
+	<import addon="lib.multimedia.makemkv" version="4.3.2"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="default.py">
+	<provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+	<summary>mkvripper (MakeMKV)</summary>
+	<description>
+	Kodi plugin that provides a simple frontend to makemkvcon (installed seperately) to allow easy BD/DVD ripping within the Kodi environment.
+	</description>	
+	<platform>linux</platform>
+    </extension>
+</addon>
