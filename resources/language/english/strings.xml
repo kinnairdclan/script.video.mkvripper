@@ -1,0 +1,17 @@
+<strings>
+    <!--Notifications -->
+    <string id="50001">makemkvcon binary not installed.</string>
+    <string id="50002">Disc drive not ready.</string>
+    <string id="50003">Disc drive tray open.</string>
+    <string id="50004">No media present in disc drive.</string>
+
+    <!--Prompts -->
+    <string id="51001">Select save location for ripped .mkv files:</string>
+    <string id="51002">Enter savename for all titles to be ripped:</string>
+    <string id="51003">title</string>
+
+    <!--Settings -->
+    <string id="52001">Minimum file size to rip (MB)</string>
+    <string id="52002">makemkvcon binary location</string>
+    <string id="52003">Disc drive device file</string>
+</strings>

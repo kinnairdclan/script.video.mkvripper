@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <setting id="ripsize_min" type="number" label="52001" default="600"/>
+    <setting id="makemkvcon_path" type="text" label="52002" default="/usr/bin/makemkvcon"/>
+    <setting id="disc_number" type="text" label="52003" default="/dev/sr0"/>
+</settings>
