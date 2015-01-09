@@ -4,6 +4,16 @@
     <string id="50002">Disc drive not ready.</string>
     <string id="50003">Disc drive tray open.</string>
     <string id="50004">No media present in disc drive.</string>
+    <string id="50005">Scanning media in %s:</string>
+    <string id="50006">Ripping files from media in %s:</string>
+    <string id="50007">ERROR: makemkvcon binary not found.</string>
+    <string id="50008">Please install MakeMKV or adjust</string>
+    <string id="50009">the makemkvcon binary path setting.</string>
+    <string id="50010">User did not select a disc rip operation.</string>
+    <string id="50011">Rip media from disc in %s?</string>
+    <string id="50012">Rip operation already running on %s</string>
+    <string id="50013">Rip finished on %s</string>
+    <string id="50014">Canceled rip on %s</string>
 
     <!--Prompts -->
     <string id="51001">Select save location for ripped .mkv files:</string>
@@ -12,6 +22,6 @@
 
     <!--Settings -->
     <string id="52001">Minimum file size to rip (MB)</string>
-    <string id="52002">makemkvcon binary location</string>
+    <string id="52002">makemkvcon binary path</string>
     <string id="52003">Disc drive device file</string>
 </strings>

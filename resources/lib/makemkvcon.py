@@ -61,22 +61,20 @@ def kill(job):
     cleanup(job)
 
 def start(job):
-    #global DEST_WRITEPATH = dest_writepath
-    #the above should be handled in gui.py
-    job['tmp_dir'] = '/home/jrk/Public/tmp' #tempfile.mkdtemp()
+    job['tmp_dir'] = tempfile.mkdtemp()
     if running(job['dev']):
         plugin.log('makemkvcon already running on %s' % job['dev'])
         return
 
     ripsize_min = plugin.get('ripsize_min', '600')
     disc_number = plugin.get('disc_number', '/dev/sr0')
-    print 'starting new makemkvcon'
-    
 
     cmd = plugin.get('makemkvcon_path', '/usr/bin/makemkvcon')
     cmd = [cmd, '-r', '--minlength=' + ripsize_min, 'mkv', 'dev:' + disc_number, 'all', job['tmp_dir']]
     job['cmd'] = cmd
     job['dev'] = disc_number
+    plugin.log("FULL COMMAND IS: ")
+    plugin.log(str(cmd))
     job['output'] = subprocess.Popen(job['cmd'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     job['pid'] = job['output'].pid
     plugin.log('started new makemkvcon') 
@@ -91,13 +89,12 @@ def save(job):
             if len(l) >= 2:
                 dest = os.path.join(job['dest_writepath'], job['dest_savename'] + i[-6:]) #save as numbered .mkv file if there is more than one file to be saved
             else:
-                dest = os.path.join(job['dest_writepath'], job['dest_savename'] + i[-4:]) #save without numbered suffix if only on .mkv file to be saved
+                dest = os.path.join(job['dest_writepath'], job['dest_savename'] + i[-4:]) #save without numbered suffix if only one .mkv file to be saved
 
             try:
                 shutil.move(src, dest)
             except IOError, e:
-                #plugin.log('makemkvcon.save() ERROR: %s' % e)
-                print 'makemkvcon.save error'
+                plugin.log('makemkvcon.save() ERROR: %s' % e)
                 cleanup(job)
         cleanup(job)
                 
