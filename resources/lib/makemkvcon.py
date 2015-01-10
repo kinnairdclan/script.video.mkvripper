@@ -29,7 +29,7 @@ def installed():
         p = None
         return True
     except Exception, e:
-        plugin.log('makemkvcon.installed() ERROR: %s' % e)
+        plugin.log('makemkvcon.installed() ERROR: %s' % str(e))
     return False
 
 def running(dev):
@@ -48,20 +48,21 @@ def cleanup(job):
     tmp_dir = job['tmp_dir']
     try:
         shutil.rmtree(tmp_dir)
-    except IOError, e:
-        plugin.log('makemkvcon.cleanup() ERROR: %s' % e)
+    except Exception, e:
+        plugin.log('makemkvcon.cleanup() ERROR: %s' % str(e))
     #remove job from service 
-    #zero out elements of job if applicable here
+    #zero out elements of job if applicable here -- not necessary yo.
 
-def kill(job):
+def kill(job, signal='-KILL'):
     pid = str(job['pid'])
     plugin.log('killing makemkvcon job on %s' % job['dev'])
-    cmd = ['kill', pid]
+    cmd = ['kill', signal, pid]
     subprocess.call(cmd)
-    cleanup(job)
+    if signal == '-KILL':
+        cleanup(job)
 
 def start(job):
-    job['tmp_dir'] = tempfile.mkdtemp()
+    job['tmp_dir'] = tempfile.mkdtemp(dir=job['dest_writepath'])
     if running(job['dev']):
         plugin.log('makemkvcon already running on %s' % job['dev'])
         return
@@ -70,7 +71,8 @@ def start(job):
     disc_number = plugin.get('disc_number', '/dev/sr0')
 
     cmd = plugin.get('makemkvcon_path', '/usr/bin/makemkvcon')
-    cmd = [cmd, '-r', '--minlength=' + ripsize_min, 'mkv', 'dev:' + disc_number, 'all', job['tmp_dir']]
+    cmd = [cmd, '-r', '--progress=-stdout', '--minlength=' + ripsize_min, 
+           'mkv', 'dev:' + disc_number, 'all', job['tmp_dir']]
     job['cmd'] = cmd
     job['dev'] = disc_number
     plugin.log("FULL COMMAND IS: ")
@@ -93,9 +95,10 @@ def save(job):
 
             try:
                 shutil.move(src, dest)
-            except IOError, e:
-                plugin.log('makemkvcon.save() ERROR: %s' % e)
+            except Exception, e:
+                plugin.log('makemkvcon.save() ERROR: %s' % str(e))
                 cleanup(job)
+                raise
         cleanup(job)
                 
 
