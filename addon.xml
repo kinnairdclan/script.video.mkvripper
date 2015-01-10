@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="script.video.mkvripper" 
-       version="0.1.0" 
+       version="0.2.0" 
        name="MKVRipper"
        provider-name="Jason Kinnard">
     <requires>
 	<import addon="xbmc.python" version="2.18.0"/>
     </requires>
-    <extension point="xbmc.python.script" library="default.py">
+    <extension point="xbmc.python.script" 
+	library="default.py">
 	<provides>video</provides>
     </extension>
     <extension point="xbmc.addon.metadata">
 	<summary lang="en">Rip .mkv files from BD/DVD within Kodi</summary>
-	<description lang="en">Kodi script that provides a simple frontend to makemkvcon to allow easy BD/DVD ripping within the Kodi environment.</description>
+	<description lang="en">Kodi script that provides a frontend to makemkvcon to allow easy BD/DVD ripping within the Kodi environment.</description>
 	<platform>linux</platform>
 	<email>kinnard.jason@gmail.com</email>
     </extension>
