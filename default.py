@@ -16,5 +16,4 @@ if __name__ == '__main__':
     import plugin
     from gui import mkvripper_gui
     w = mkvripper_gui()
-    w.doModal()
     del w
