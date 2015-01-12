@@ -1,7 +1,6 @@
 # Base imports
 import os
 import shutil
-import sys
 import tempfile
 import subprocess
 
@@ -32,14 +31,14 @@ def installed():
         plugin.log('makemkvcon.installed() ERROR: %s' % str(e))
     return False
 
-def running(dev):
+def running():
     import glob
     path = plugin.get('makemkvcon_path', '/usr/bin/makemkvcon')
     for f in glob.glob('/proc/*/cmdline'):
         try:
             cl = open(f).read()
             if cl.startswith(path):
-                if dev in cl:
+                if cl.endswith('.mkvripper'):
                     return True
         except: pass
     return False
@@ -62,8 +61,9 @@ def kill(job, signal='-KILL'):
         cleanup(job)
 
 def start(job):
-    job['tmp_dir'] = tempfile.mkdtemp(dir=job['dest_writepath'])
-    if running(job['dev']):
+
+    job['tmp_dir'] = tempfile.mkdtemp(suffix='.mkvripper', dir=job['dest_writepath'])
+    if running():
         plugin.log('makemkvcon already running on %s' % job['dev'])
         return
 
@@ -75,15 +75,17 @@ def start(job):
            'mkv', 'dev:' + disc_number, 'all', job['tmp_dir']]
     job['cmd'] = cmd
     job['dev'] = disc_number
-    plugin.log("FULL COMMAND IS: ")
-    plugin.log(str(cmd))
-    job['output'] = subprocess.Popen(job['cmd'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    job['output'] = subprocess.Popen(job['cmd'], 
+    stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    close_fds=True)
+
     job['pid'] = job['output'].pid
-    plugin.log('started new makemkvcon') 
+    plugin.log('started new makemkvcon with command %s' % job['cmd']) 
     return job
 
 def save(job):
-    if not running(job['dev']):
+    if not running():
         l = os.listdir(job['tmp_dir'])
         for i in l:
 
