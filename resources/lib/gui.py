@@ -1,5 +1,6 @@
 #Base imports 
 import sys
+import os
 
 # XBMC imports
 import xbmc
@@ -17,10 +18,23 @@ __addonname__ = __addon__.getAddonInfo('name')
 ACTION_PREVIOUS_MENU = 10
 KEY_BUTTON_BACK = 275
 
+#DVD drive state codes
+DRIVE_OPEN                 = 0
+DRIVE_NOT_READY            = 1
+DRIVE_READY                = 2
+DRIVE_CLOSED_NO_MEDIA      = 3
+DRIVE_CLOSED_MEDIA_PRESENT = 4
+DRIVE_NONE                 = 5
+
+
 #Global job
 MAKEMKVCON = None
 
 class mkvripper_gui(xbmcgui.WindowDialog):
+
+    def gui_error(self, dialog, message):
+        if dialog.ok(plugin.lang(50015), message):
+            self.close()
 
     def __init__(self):
 
@@ -35,16 +49,36 @@ class mkvripper_gui(xbmcgui.WindowDialog):
             self.close()
             return
 
+        os.putenv("XBMC_DVD_DEVICE", plugin.get('disc_number', '/dev/sr0'))
+        dvdstate = xbmc.getDVDState()
+        plugin.notify('DVD STATE IS: %s' % str(dvdstate)) 
+        #device present error?
+        if dvdstate == DRIVE_NONE:
+            msg = 'No DVD drive detected on this system. Press OK to exit'
+            self.gui_error(dialog, msg)
+            return
+
         #media present error?
+        elif dvdstate == DRIVE_NOT_READY:
+            msg = 'DVD drive not ready. Press OK to exit'
+            self.gui_error(dialog, msg)
+            return
+        elif dvdstate == DRIVE_OPEN:
+            msg = 'DVD drive tray open. Press OK to exit'
+            self.gui_error(dialog, msg)
+            return
+        elif dvdstate == DRIVE_CLOSED_NO_MEDIA:
+            msg = 'No media detected in DVD drive. Press OK to exit'
+            self.gui_error(dialog, msg)
+            return
         #correct type of media error?
-        #RIP FROM WHERE menu: this should react with makemkv's file option...maybe let's think about this
 
         job = {}
         job['dev'] = plugin.get('disc_number', '/dev/sr0') #this can be made configurable at runtime
 
         #device present error?
 
-        job_running = makemkvcon.running(job['dev'])
+        job_running = makemkvcon.running()
         if job_running:
             label = xbmcgui.ControlLabel(100, 120, 200, 200, plugin.lang(50012) % job['dev']) #Rip operation already running on <disc>
             button0 = xbmcgui.ControlButton(350, 500, 80, 30, 'derp')
@@ -93,8 +127,18 @@ class mkvripper_gui(xbmcgui.WindowDialog):
                                 MAKEMKVCON = None
                                 self.close()
                                 return
+                        if line.startswith('MSG:5010'):
+                            makemkvcon.kill(MAKEMKVCON, '-STOP')
+                            msg = 'makemkvcon: %s' % msg
+                            if dialog.ok(plugin.lang(50015), msg): 
+                                sys.stdout.flush()
+                                makemkvcon.kill(MAKEMKVCON)
+                                MAKEMKVCON = None
+                                self.close()
+                                return
                         if line.startswith('MSG:2018'):
                             makemkvcon.kill(MAKEMKVCON, '-STOP')
+                            msg = 'makemkvcon: %s' % msg
                             if dialog.ok(plugin.lang(50015), msg): 
                                 sys.stdout.flush()
                                 makemkvcon.kill(MAKEMKVCON)
@@ -117,13 +161,22 @@ class mkvripper_gui(xbmcgui.WindowDialog):
                         d = float(line[2])
                         percent = int(n / d * 100)
 
-                    p_dialog.update(percent, label, msg)
-                    sys.stdout.flush()
 
                     if p_dialog.iscanceled():
-                        #makemkvcon.kill(MAKEMKVCON)
-                        self.close()
-                        return
+                        makemkvcon.kill(MAKEMKVCON, '-STOP')
+                        if xbmcgui.Dialog().yesno(__addonname__, 'Cancel disc rip on %s?' % MAKEMKVCON['dev']):
+                            makemkvcon.kill(MAKEMKVCON)
+                            MAKEMKVCON = None
+                            p_dialog.close()
+                            self.close()
+                            return
+                        else:
+                            makemkvcon.kill(MAKEMKVCON, '-CONT')
+                            p_dialog.create(__addonname__, plugin.lang(50005) % MAKEMKVCON['dev']) #Scanning media in <disc>
+                            pass
+
+                    p_dialog.update(percent, label, msg)
+                    sys.stdout.flush()
 
                 p_dialog.update(100, plugin.lang(50016) % MAKEMKVCON['dest_writepath']) #Moving titles from temporary directory to <savedir>
                 try:
@@ -141,22 +194,3 @@ class mkvripper_gui(xbmcgui.WindowDialog):
     def onAction(self, action):
         if action == ACTION_PREVIOUS_MENU or KEY_BUTTON_BACK:
             self.close()
-            pass
-
-    def close(self):
-        global MAKEMKVCON
-        if MAKEMKVCON is not None:
-            makemkvcon.kill(MAKEMKVCON, '-STOP')
-            if xbmcgui.Dialog().yesno(__addonname__, 'Cancel disc rip on %s or run in background?' % MAKEMKVCON['dev'], nolabel='Cancel', yeslabel='Run in background'):
-                makemkvcon.kill(MAKEMKVCON, '-CONT')
-                MAKEMKVCON = None
-                super(mkvripper_gui, self).close()
-            else:
-                makemkvcon.kill(MAKEMKVCON)
-                plugin.notify(plugin.lang(50014) % MAKEMKVCON['dev'])
-                super(mkvripper_gui, self).close()
-        else:
-            super(mkvripper_gui, self).close()
-
-
-
