@@ -16,10 +16,6 @@ import plugin
 __addon__     = xbmcaddon.Addon()
 __addonname__ = __addon__.getAddonInfo('name')
 
-#
-# Check if binary is installed
-#
-
 def installed():
     path = plugin.get('makemkvcon_path', 'makemkvcon')
     plugin.log('makemkvcon_path = %s' % path)
@@ -28,60 +24,59 @@ def installed():
         p = None
         return True
     except Exception, e:
-        plugin.log('makemkvcon.installed() ERROR: %s' % str(e))
+        plugin.log(plugin.lang(50017) % str(e)) #makemkvcon.installed() ERROR: %s
     return False
 
-def running():
+def running(dev=None):
     import glob
-    path = plugin.get('makemkvcon_path', '/usr/bin/makemkvcon')
+    path = plugin.get('makemkvcon_path', 'makemkvcon')
     for f in glob.glob('/proc/*/cmdline'):
         try:
             cl = open(f).read()
             if cl.startswith(path):
-                if cl.endswith('.mkvripper'):
-                    return True
-        except: pass
-    return False
+                if dev is None:
+                    return f.split('/')[2] #pid of running makemkvcon
+                else:
+                    if dev in cl:
+                        return f.split('/')[2] #pid of running makemkvcon corresponding to dev
+        except Exception, e:
+            raise
+    return 0
 
 def cleanup(job):
     tmp_dir = job['tmp_dir']
     try:
         shutil.rmtree(tmp_dir)
     except Exception, e:
-        plugin.log('makemkvcon.cleanup() ERROR: %s' % str(e))
+        plugin.log(plugin.lang(50018) % str(e)) #makemkvcon.cleanup() ERROR: %s
     #remove job from service 
     #zero out elements of job if applicable here -- not necessary yo.
 
 def kill(job, signal='-KILL'):
     pid = str(job['pid'])
-    plugin.log('killing makemkvcon job on %s' % job['dev'])
+    plugin.log(plugin.lang(50019) % (job['dev'], signal)) #killing makemkvcon job on %s with signal %s
     cmd = ['kill', signal, pid]
     subprocess.call(cmd)
     if signal == '-KILL':
-        cleanup(job)
+        if job['tmp_dir'] is not None:
+            cleanup(job)
 
 def start(job):
 
     job['tmp_dir'] = tempfile.mkdtemp(suffix='.mkvripper', dir=job['dest_writepath'])
-    if running():
-        plugin.log('makemkvcon already running on %s' % job['dev'])
-        return
 
     ripsize_min = plugin.get('ripsize_min', '600')
-    disc_number = plugin.get('disc_number', '/dev/sr0')
 
-    cmd = plugin.get('makemkvcon_path', '/usr/bin/makemkvcon')
-    cmd = [cmd, '-r', '--progress=-stdout', '--minlength=' + ripsize_min, 
-           'mkv', 'dev:' + disc_number, 'all', job['tmp_dir']]
+    cmd = plugin.get('makemkvcon_path', 'makemkvcon')
+    cmd = [cmd, '-r', '--progress=-stdout', '--minlength=%s' % ripsize_min, 
+           'mkv', 'dev:%s' % job['dev'], 'all', job['tmp_dir']]
     job['cmd'] = cmd
-    job['dev'] = disc_number
-
     job['output'] = subprocess.Popen(job['cmd'], 
     stdout=subprocess.PIPE, stderr=subprocess.PIPE,
     close_fds=True)
 
     job['pid'] = job['output'].pid
-    plugin.log('started new makemkvcon with command %s' % job['cmd']) 
+    plugin.log(plugin.lang(50021) % job['cmd']) #started new makemkvcon with command %s
     return job
 
 def save(job):
@@ -98,9 +93,15 @@ def save(job):
             try:
                 shutil.move(src, dest)
             except Exception, e:
-                plugin.log('makemkvcon.save() ERROR: %s' % str(e))
+                plugin.log(plugin.lang(50022) % str(e)) #makemkvcon.save() ERROR: %s
                 cleanup(job)
                 raise
         cleanup(job)
                 
-
+def scan_discs():
+    disc_list = []
+    cmd = plugin.get('makemkvcon_path', 'makemkvcon')
+    cmd = [cmd, '-r', '--cache=1', 'info', 'dev']
+    output = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+             stderr=subprocess.PIPE, close_fds=True)
+    return output.stdout
