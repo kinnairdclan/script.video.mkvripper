@@ -24,7 +24,7 @@ def installed():
         p = None
         return True
     except Exception, e:
-        plugin.log(plugin.lang(50017) % str(e)) #makemkvcon.installed() ERROR: %s
+        plugin.log(plugin.lang(50017) % e.strerror) #makemkvcon.installed() ERROR: %s
     return False
 
 def running(dev=None):
@@ -48,7 +48,7 @@ def cleanup(job):
     try:
         shutil.rmtree(tmp_dir)
     except Exception, e:
-        plugin.log(plugin.lang(50018) % str(e)) #makemkvcon.cleanup() ERROR: %s
+        plugin.log(plugin.lang(50018) % e.strerror) #makemkvcon.cleanup() ERROR: %s
     #remove job from service 
     #zero out elements of job if applicable here -- not necessary yo.
 
@@ -93,15 +93,7 @@ def save(job):
             try:
                 shutil.move(src, dest)
             except Exception, e:
-                plugin.log(plugin.lang(50022) % str(e)) #makemkvcon.save() ERROR: %s
+                plugin.log(plugin.lang(50022) % e.strerror) #makemkvcon.save() ERROR: %s
                 cleanup(job)
                 raise
         cleanup(job)
-                
-def scan_discs():
-    disc_list = []
-    cmd = plugin.get('makemkvcon_path', 'makemkvcon')
-    cmd = [cmd, '-r', '--cache=1', 'info', 'dev']
-    output = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-             stderr=subprocess.PIPE, close_fds=True)
-    return output.stdout
