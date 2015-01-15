@@ -6,6 +6,7 @@ import sys
 import xbmc
 import xbmcaddon
 
+#Local imports
 __addon__ = xbmcaddon.Addon()
 __cwd__ = __addon__.getAddonInfo('path')
 
