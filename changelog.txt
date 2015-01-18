@@ -1,0 +1,10 @@
+v0.3.1
+Added this changelog.
+Renamed LICENSE to LICENSE.txt
+
+v0.3.0
+Catches and exits with media type errors, disk tray errors, hard disk space errors.
+All strings localized.
+
+v0.0.1
+Initial version
