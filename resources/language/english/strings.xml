@@ -31,7 +31,7 @@
     <string id="52002">Cancel running operation</string>
 
     <!--Settings -->
-    <string id="53001">Minimum file size to rip (MB)</string>
+    <string id="53001">Minimum file size to rip by length (seconds)</string>
     <string id="53002">makemkvcon binary path</string>
     <string id="53003">Disc drive device file</string>
 </strings>
