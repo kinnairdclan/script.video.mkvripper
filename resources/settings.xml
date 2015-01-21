@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-    <setting id="ripsize_min" type="number" label="53001" default="300"/>
+    <setting id="ripsize_min" type="number" label="53001" default="6000"/>
     <setting id="makemkvcon_path" type="text" label="53002" default="makemkvcon"/>
     <setting id="disc_number" type="text" label="53003" default="/dev/sr0"/>
 </settings>
