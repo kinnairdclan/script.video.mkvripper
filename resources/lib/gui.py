@@ -142,10 +142,10 @@ class mkvripper_gui(xbmcgui.WindowDialog):
             p_dialog.update(100, plugin.lang(50016) % MAKEMKVCON['dest_writepath']) #Moving titles from temporary directory to <savedir>
             try:
                 makemkvcon.save(MAKEMKVCON)
-			except TmpDirEmpty:										#Is temporary directory empty after rip has completed successfully?
-				if dialog.ok(plugin.lang(50015), plugin.lang(50023)): 	#Plugin detected that makemkvcon ripped no files but exited successfully.	
-            		self.close()
-					return
+            except makemkvcon.TmpDirEmpty:				#Is temporary directory empty after rip has completed successfully?
+		if dialog.ok(plugin.lang(50015), plugin.lang(50023)): 	#Plugin detected that makemkvcon ripped no files but exited successfully.
+                    self.close()
+                    return
             except Exception, e:								#some other error with shutil.move()
                 if dialog.ok(plugin.lang(50015), e.strerror):
                     self.close()
