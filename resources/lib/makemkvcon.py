@@ -80,8 +80,18 @@ def start(job):
     return job
 
 def save(job):
+
+#Special exception for save(): is temporary directory empty after a rip? If so, error could be a multitude of things...makemkvcon likes to exit successfully with zero files ripped sometimes.
+	class TmpDirEmpty(Exception):
+		def __init__(self, message):
+			super(TmpDirEmpty, self).__init__(message)
+			self.message = message
+
     if not running():
         l = os.listdir(job['tmp_dir'])
+		if l == []:
+            cleanup(job)
+			raise TmpDirEmpty('temporary directory empty!')
         for i in l:
 
             src = os.path.join(job['tmp_dir'], i)
