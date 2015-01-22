@@ -1,3 +1,8 @@
+v0.3.2
+Changed ripsize_min setting to explain what it actually does--limit rips by a minimum duration, as opposed to its size in MB as I had previously thought (oops!)
+New RPC error-catching implemented--Sometimes, with RPC protections on certain
+disc drives, makemkvcon can report on these protections, attempt to rip but fail, then exit successfully. The application now catches these types of problems and reports them post-rip.
+
 v0.3.1
 Added this changelog.
 Renamed LICENSE to LICENSE.txt
