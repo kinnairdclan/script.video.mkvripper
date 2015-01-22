@@ -1,7 +1,7 @@
 <strings>
     <!--Notifications -->
     <string id="50001">makemkvcon binary not installed.</string>
-    <string id="50002">Disc drive device file not reported as CDROM device. Adjust disc drive device file setting.</string>
+    <string id="50002">Disc drive device file not reported as CDROM device. Adjust disc drive setting.</string>
     <string id="50003">Cancel disc rip on %s?</string>
     <string id="50004">. Ensure correct media type is inserted and device tray is closed.</string>
     <string id="50005">Scanning media in %s:</string>
@@ -20,6 +20,7 @@
     <string id="50020">makemkvcon already running on %s</string>
     <string id="50021">started new makemkvcon with command %s</string>
     <string id="50022">makemkvcon.save() ERROR: %s</string>
+    <string id="50023">Plugin detected that makemkvcon ripped no files but exited successfully. Please check minimum title duration setting to ensure it is not too high. If this problem persists, it may be because the selected disc drive's RPC firmware is preventing makemkvcon from ripping the disc.</string>
 
     <!--Prompts -->
     <string id="51001">MKVRipper: Select save location for ripped .mkv files</string>
@@ -31,7 +32,7 @@
     <string id="52002">Cancel running operation</string>
 
     <!--Settings -->
-    <string id="53001">Minimum file size to rip by length (seconds)</string>
+    <string id="53001">Minimum title length to be ripped (seconds)</string>
     <string id="53002">makemkvcon binary path</string>
-    <string id="53003">Disc drive device file</string>
+    <string id="53003">Disc drive</string>
 </strings>
